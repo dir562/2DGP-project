@@ -34,6 +34,26 @@ What policies?
 Abstractions == Combination of mechanisms and policies
 
 
+## 184 page : Linux Multiprocessor Schedulers
+O(1)
+A Priority-based scheduler
+Use Multiple queues
+Change a process’s priority over time
+Schedule those with highest priority
+Interactivity is a particular focus
+
+Completely Fair Scheduler (CFS)
+Deterministic proportional-share approach
+Multiple queues
+
+
+## 185 page
+BF Scheduler (BFS)
+A single queue approach
+Proportional-share
+Based on Earliest Eligible Virtual Deadline First (EEVDF)
+
+
 
 # 2번째 PPT
 
@@ -55,6 +75,29 @@ The OS moves one of B or D to CPU 0
 
 
 
+## 186페이지 : I/O-Bound VS. Processor-Bound Processes
+Processes can be classified as either I/O-bound or processor-bound 
+The former is characterized as a process that spends much of its time submitting and waiting on I/O requests
+Consequently, such a process is runnable for only short durations, because it eventually blocks waiting on more I/O
+Any type of blockable resource, such as keyboard input or network I/O, and not just disk I/O
+Most graphical user interface (GUI) applications are I/O-bound, even if they never read from or write to the disk
+They spend most of their time waiting on user interaction via the keyboard and mouse
 
+## 188 페이지 : I/O-Bound VS. Processor-Bound Processes
+The scheduling policy must satisfy two conflicting goals
+Fast process response time (low latency)
+Maximal system utilization (high throughput)
+
+Linux, aiming to provide good interactive response and desktop performance,
+optimizes for process response (low latency), thus favoring I/O-bound processes over processor-bound processors
+
+## 189 페이지 : Process Priority
+A common type of scheduling algorithm is priority-based scheduling
+The goal is to rank processes based on their worth and need
+Both the user and the system can set a process’s priority to influence the scheduling behavior
+Processes with a higher priority run before those with a lower priority
+Processes with the same priority are scheduled round-robin
+On some systems, processes with a higher priority also receive a longer timeslice
+The runnable process with timeslice remaining and the highest priority always runs
 
 
