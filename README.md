@@ -143,6 +143,62 @@ LWKs provide a stripped down OS environment
 -- "Leaky" microkernel
 - Will provide functionality in OS when it makes sense
 
+## 26 : Lightweight Co-kernels
+Fact: Programmers are lazy
+- Everyone just wants to use Linux
+- LWKs lack many Linux features (i.e. shells)
+Co-kernels couple an LWK and a FWK (Linux) on the same machine
+- Missing features in LWK can be provided by Linux
+- Machine can be managed via Linux
+- Applications can be launched onto an LWK partition
+Best of both worlds
+- Functionality of Linux
+- Performance of an LWK for HPC Apps
+- Non-interference between the two partitions
+
+
+## 28 : Hypervisors/VMMs
+A Virtual Machine is a software version of the hardware state of a computer system
+- An operating system running within a virtual machine is called a guest operating system
+
+## 29 : Virtual Machine Monitors (VMMs)
+Virtual Machines run an OS as an application
+- Implements hardware interface in software
+
+Ways to build a VMM (Type 1 vs Type 2)
+- Type 2: VMs run as apps in a native OS
+-- VMWare Player, KVM, VirtualBox
+- Type 1: Hypervisor is the native OS
+-- No native apps, everything runs in a VM
+-- Xen, VMWare ES
+
+
+## 32 : What a happens when a program runs?
+A running program executes instructions.
+1. The processor fetches an instruction from memory.
+2. Decode: Figure out which instruction this is
+3. Execute: i.e., add two numbers, access memory, check a condition, jump to function, and so forth.
+4. The processor moves on to the next instruction and so on.
+
+## 33 : Operating System (OS)
+Responsible for
+- Making it easy to run programs
+- Allowing programs to share memory
+- Enabling programs to interact with devices
+
+OS is in charge of making sure the system operates correctly and efficiently.
+
+## 34 : Virtualization
+The OS takes a physical resource and transforms it into a virtual form of itself.
+- - Physical resource: Processor, Memory, Disk …
+- The virtual form is more general, powerful and easy-to-use.
+- Sometimes, we refer to the OS as a virtual machine.
+
+
+
+
+
+
 
 # 2번째 PPT
 
