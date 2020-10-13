@@ -195,6 +195,142 @@ The OS takes a physical resource and transforms it into a virtual form of itself
 - Sometimes, we refer to the OS as a virtual machine.
 
 
+## 35 : System call
+System call allows user to tell the OS what to do.
+- The OS provides some interface (APIs, standard library).
+- A typical OS exports a few hundred system calls.
+- - Run programs
+- - Access memory
+- - Access devices
+
+## 36 : The OS is a resource manager.
+The OS manage resources such as CPU, memory and disk.
+The OS allows
+- Many programs to run  Sharing the CPU
+- Many programs to concurrently access their own instructions and data  Sharing memory
+- Many programs to access devices  Sharing disks
+
+
+## 37 : Virtualizing the CPU
+The system has a very large number of virtual CPUs.
+- Turning a single CPU into a seemingly infinite number of CPUs.
+- Allowing many programs to seemingly run at once                                                   
+- --  Virtualizing the CPU
+
+## 41 : Virtualizing Memory
+The physical memory is an array of bytes.
+A program keeps all of its data structures in memory.
+- Read memory (load):
+- -Specify an address to be able to access the data
+- Write memory (store):
+- - Specify the data to be written to the given address
+
+
+
+## 44 :Virtualizing Memory (Cont.)
+The output of the program mem.c
+- The newly allocated memory is at address 00200000.
+- It updates the value and prints out the result.
+
+
+## 45 : Virtualizing Memory (Cont.)
+Each process accesses its own private virtual address space.
+- The OS maps address space onto the physical memory.
+- A memory reference within one running program does not affect the address space of other processes.
+- Physical memory is a shared resource, managed by the OS.
+
+
+## 46 : The problem of Concurrency
+The OS is juggling many things at once, first running one process, then another, and so forth.
+
+Modern multi-threaded programs also exhibit the concurrency problem.
+
+
+## 48 : Concurrency Example (Cont.)
+The main program creates two threads.
+- Thread: a function running within the same memory space. Each thread start running in a routine called worker().
+- worker(): increments a counter
+
+## 49 : Concurrency Example (Cont.)
+loops determines how many times each of the two workers will increment the shared counter in a loop.
+loops: 1000.
+
+loops: 100000.
+
+
+## 50 : Why is this happening?
+Increment a shared counter  take three instructions.
+1, Load the value of the counter from memory into register.
+2, Increment it
+3. Store it back into memory
+
+These three instructions do not execute atomically.  Problem of concurrency happen.
+
+
+## 51 : Persistence
+Devices such as DRAM store values in a volatile.
+Hardware and software are needed to store data persistently.
+- Hardware: I/O device such as a hard drive, solid-state drives(SSDs)
+- Software:
+- - File system manages the disk.
+- -File system is responsible for storing any files the user creates.
+
+
+## 52 :Persistence (Cont.)
+open(), write(), and close() system calls are routed to the part of OS called the file system, which handles the requests
+Create a file (/tmp/file) that contains the string "hello world"
+
+
+## 53 :Persistence (Cont.)
+What OS does in order to write to disk?
+- Figure out where on disk this new data will reside
+- Issue I/O requests to the underlying storage device
+
+File system handles system crashes during write.
+- Journaling or copy-on-write
+- Carefully ordering writes to disk
+
+
+
+
+## 54 : Design Goals
+Build up abstraction
+- Make the system convenient and easy to use.
+
+Provide high performance
+- Minimize the overhead of the OS.
+- OS must strive to provide virtualization without excessive overhead.
+
+Protection between applications
+- Isolation: Bad behavior of one does not harm other and the OS itself.
+
+
+## 55 : Design Goals (Cont.)
+High degree of reliability
+- The OS must also run non-stop.
+
+Other issues
+- Energy-efficiency
+- Security
+- Mobility
+
+
+## 56 : What does OS deal with
+CPU
+- Execute code with data
+
+
+Memory
+- Read and write code and data
+
+
+Storage
+- Persistently store the code and data
+
+
+
+
+
 
 
 
