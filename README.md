@@ -194,6 +194,51 @@ Maximize overall CPU utilization while also maximizing interactive performance
 CFS does not use the old data structures for the runqueues, but it uses a time-ordered red black tree to build a "timeline" of future task execution
 
 In CFS the virtual runtime is expressed and tracked via the per-task
--> p->se.vruntime
--> nanosec-unit
+ -> p->se.vruntime
+ -> nanosec-unit
+
+## 206 : Completely fair scheduling (CFS)
+Each process then runs for a "timeslice" proportional to its weight divided by the total weight of all runnable threads
+
+To calculate the actual timeslice, CFS sets a target for its approximation of the "infinitely small" scheduling duration
+ -This target is called the targeted latency
+ 
+ 
+ ## 208 : Completely fair scheduling (CFS)
+  Assume the targeted latency is 20 milliseconds and we have 2 runnable tasks at the same priority
+- Each will run for 10 milliseconds before preempting the other
+- If we have 4 tasks at the same priority, each will run for 5 milliseconds
+- If there are 20 tasks, each will run for 1 millisecond
+
+As the number of runnable tasks approaches infinity, the assigned timeslice approaches zero
+
+As this will eventually result in unacceptable switching costs, CFS imposes a floor on the timeslice assigned to each process
+- This floor is called the minimum granularity
+- By default it is 1 millisecond
+- Thus, even as the number of runnable processes approaches infinity, each will run for at least 1 millisecond
+
+
+## 209 : Completely fair scheduling (CFS)
+Now, let’s again consider the case of two runnable processes with dissimilar nice values
+- One with the default nice value (0)
+- One with a nice value of 5
+
+These nice values have dissimilar weights and thus our two processes receive different proportions of the processor’s time
+- he weights work out to about a 1⁄3 penalty for the nice-5 process
+- If our target latency is again 20 milliseconds, our two processes will receive 15 and 5 milliseconds each of processor time, respectively
+
+What would be the allotted timeslices?
+- Again 15 and 5 milliseconds each!
+- Absolute nice values no longer affect scheduling decisions
+- Only relative values affect the proportion of processor time allotted
+
+
+## 212 :CFS implementation
+CFS's task picking logic is based on this p->se.vruntime value
+- It always tries to run the task with the smallest p->se.vruntime value (i.e., the task which executed least so far)
+- The left most node of the scheduling red-black tree is chosen and sent for execution
+
+ If the process completes execution, it is removed from the system and scheduling tree
+ If the process reaches its maximum execution time or is otherwise stopped it is reinserted into the scheduling tree based on its new spent execution time
+The new left-most node will then be selected from the tree, repeating the iteration
 
