@@ -1,40 +1,147 @@
 # 1, 운영체제
 ## page 1: OS:
-Everything that isn’t an application or hardware
+- Everything that isn’t an application or hardware
 ## OS:
-Software that abstracts hardware into a useful form for applications
-OS's functions: (1) Standard Library (2) Resource Coordinator
+- Software that abstracts hardware into a useful form for applications
+- OS's functions: (1) Standard Library (2) Resource Coordinator
 
 ## page2 : First Function: Standard Library
 Advantages of standard library
-Allow applications to reuse common facilities
-Make different devices look the same
-Provide higher level abstractions
+- Allow applications to reuse common facilities
+- Make different devices look the same
+- Provide higher level abstractions
 
 
 
 
 Challenges
-What are the right abstractions?
+- What are the right abstractions?
 
 
 
 ## page3 : Second Function: Resource Coordinator
 Resource: "Anything valuable" 
-(e.g. CPU, memory, disk, network)
+- (e.g. CPU, memory, disk, network)
 
 Advantages of resource coordinator
-Virtualize resource so multiple users/applications can share
-Protect applications from one another
-Provide efficient and fair access to resources
+- Virtualize resource so multiple users/applications can share
+- Protect applications from one another
+- Provide efficient and fair access to resources
 
 Challenges
-What mechanisms?
-What policies?
-Abstractions == Combination of mechanisms and policies
+- What mechanisms?
+- What policies?
+- Abstractions == Combination of mechanisms and policies
 
 
+## 18 페이지 : Types of OSes
+Monolithic kernels 
+- Linux, Windows, BSDs, …
 
+UniKernel / Library OS
+- SunMOS, Mirage, …
+
+Exokernels
+Microkernels
+- MINIX
+Multi-kernels
+- Barrelfish
+Lightweight Kernels 
+- Catamount, IBM CNK
+Co-kernels
+- McKernel, Intel mOS
+
+## 19 : Monolithic Kernels
+Defacto standard OS design approach
+- Linux, Windows, etc
+Goal is universal compatibility 
+- Support all possible hardware
+- Support all possible applications
+
+장점 :Easy to use
+- Does everything "good enough"
+- Many high level abstractions
+단점 : Large and complex
+- Size of Linux kernel source code is 850 MB
+- Constant security vulnerabilities
+
+## 20 : Unikernel
+Link OS to application as a library
+- Application and OS are a single entity
+- OS Library: 
+-- Abstractions to interface directly with hardware
+-- Policies to manage isolation in application
+
+Very high performance
+- Minimal and highly specialized abstractions
+- No context switching
+No protection!
+- Application runs as the kernel
+- Application has control over entire machine
+
+Very low system utilization
+- Only one application at a time can run on a machine
+
+
+## 21 : Unikernel use cases
+Supercomputing / HPC
+- Historically extreme scale HPC systems have run a single app at a time
+-- 1990’s – early 2000’s
+- Early OS’s could not scale
+-- Unikernels were adopted to "fill the gap"
+- Fell out of favor as OSes (Linux) caught up
+
+Cloud (Virtual Machines)
+- Virtualization sparked a renaissance in unikernels
+-- Performance benefits without the costs
+-- Multiple virtualized unikernels can run on a single system
+
+## 22 : Microkernels
+Minimalistic kernel
+- Provide very few mechanisms
+- Basic HW protection/isolation and IPC channels
+
+Higher level abstractions implemented in user space as "servers"
+- Clients request functionality from a specific server
+- OS as a distributed system (designed by Tannenbaum)
+
+Client-server communicate via message passing
+- Performance depends on a very fast message passing mechanism (the most important OS mechanism)
+
+
+## 23 :Exokernels
+A combination of micro- and uni- kernels
+- Very small kernel provides basic HW protection
+- No OS provided IPC mechanisms
+
+Applications provide own higher level services
+- Applications can choose their level of abstraction
+- Implement their own services
+
+## 24 : Multi-kernels
+Goal: Make microkernels scalable to modern systems
+- Modern many-/multi-core systems are basically distributed systems
+
+Distributed Operating System
+- Communicate via asynchronous messages 
+-- Shared memory doesn’t work in a distributed system
+- Replicate state, but use messages to keep it consistent
+- Support heterogeneous architectures
+
+
+## 25 : Lightweight kernels (LWKs)
+Designed specifically for extreme scale HPC
+- Large scale supercomputers in the upper ranks of the top 500 (http://www.top500.org)
+
+Large scale, but small world
+- Small number of applications
+- Small number of application requirements
+- Small number of systems
+
+LWKs provide a stripped down OS environment
+- Provide the OS features needed and nothing else
+-- "Leaky" microkernel
+- Will provide functionality in OS when it makes sense
 
 
 # 2번째 PPT
