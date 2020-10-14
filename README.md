@@ -528,6 +528,116 @@ PADDUSB
 
 
 
+## 49 : real mode
+All x86-based processors start in Real Mode when reset
+- 16-bit operating environments with 20-bit of address space
+Memory address space is divided into segments
+- 64kB in size
+- Base address in on any 16-byte boundary in the 20-bit address space
+- Multiple segments can be active at a time
+- -CS – Code Segment
+- -SS – Stack Segment
+- -DS – Data Segment (Default)
+- -ES, FS, and GS – additional data segments
+- No concepts of paging or virtual memory
+- No protection – any program has free access to all of memory and can directly access I/O ports
+
+
+## 50 : Segmented memory in real mode
+There can be six active segments of memory at a time
+- Each segment register defines an active segment
+The segment registers hold the upper 16-bit of the 20-bit base address of the segment
+
+## 52 : protected mode
+Protected Mode was implemented to handle the problems that exist with a multitasking environment
+- Providing memory protection across applications
+- Managing I/O transactions from a central entity (OS)
+- Controlling access to OS resources and tools
+- Verifying an application’s request to disable/enable interrupt
+Protected Mode introduced several new topics to handle the above issues
+- Segment Descriptors
+- Task Switching
+- Software Privilege Levels
+- Virtual Memory and Paging
+- I nterrupt Descriptors
+
+
+# 53 : Privileged Instructions
+Some instructions can only be executed at the highest privilege level (ring 0)
+- because they could affect the state of some shared resource
+Examples: 
+- CLI
+- STI
+- INVLPG
+- WBINVD
+- MOV (Control/Debug Register N)
+- RDMSR
+- WRMSR
+
+
+# 54 : Protected Mode
+In Protected Mode, OS can assign attributes and access right to each segment
+- Base address
+- Size of segment
+- Privilege Level
+- Read/Write permissions
+- Mode of operation
+- -16-bit, 32-bit, or 64-bit
+Each segment has an 8-byte descriptor for attributes
+- All defined segment descriptors are held in either Global Descriptor Table (GDT) or Local Descriptor Table (LDT)
+- The descriptor tables live in memory and are managed by OS
+
+## 55 : Virtual-8086 Mode
+Virtual-8086 Mode enables Real Mode applications to run efficiently under the Protected Mode
+Virtual-8086 Mode emulates the Real Mode environment
+- 16-bit operating environment
+- 20-bit address space
+It enables the processor to watch for operations that would be disruptive in a multitasking environment
+- e.g., enabling/disabling interrupt handling
+- It triggers an exception if a disruptive operation is attempted allowing the OS to handle the event
+
+
+## 56 : System Management Mode (SMM)
+System Management Mode (SMM) is used to handle system-specific activities
+- Power management, security, platform management
+This mode can only be entered by receiving a System Management Interrupt (SMI)
+When entering SMM, the processor automatically saves the state of the machine and enters a state that is transparent to the OS
+- Operates in a special region called SMRAM
+
+## 57 : Long Mode (IA-32e mode)
+Long Mode is comprised of 2 sub-modes
+- 64-bit Mode
+- Compatibility Mode
+Must be enabled by a 64-bit capable OS
+Provides the ability for 64-bit applications, as well as existing 32-bit and 16-bit Protected Mode applications to be run in this mode
+Provides a very low latency transition between a 32-bit environments (Compatibility Mode) and a 64-bit environment (64-bit Mode)
+Implements the x86-64 extensions
+- Intel 64, AMD64, and x64
+
+
+## 58 :64-bit Mode
+64-bit Mode is a sub-mode of Long Mode, which runs native 64-bit applications
+- Allows software to support larger address space
+- -Provides the ability to support up to a 64-bit virtual address space
+- - -Modern x86-64 based processors implement a 48-bit virtual address space
+- -Enables the processor to support up to a 52-bit physical address space
+- - -Modern x86-64 based processors implement a 40- or 48-bit physical address space
+Removes a lot of the antique legacy mechanisms not used by modern software
+- Segmentation and hardware task switching
+
+
+## 59 :Compatibility Mode
+A sub-mode of Long Mode, which runs binary compatible 16- and 32-bit Protected Mode applications under 64-bit system software
+To an application, Compatibility Mode looks just like Legacy Protected Mode
+- 32-bit virtual address space
+- 8 General-purpose registers (GPRs)
+- GPRs are 32-bit wide
+All system software semantics are still 64-bit
+Interrupt and Exception handling cause the processor to transit into 64-bit Mode
+
+
+
+
 
 
 
