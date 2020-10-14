@@ -336,7 +336,200 @@ Storage
 
 
 
+
 # 2번째 PPT
+
+## 2 : How to provide the illusion of many CPUs?
+CPU virtualizing
+- The OS can promote the illusion that many virtual CPUs exist.
+- Time sharing: Running one process, then stopping it and running another
+
+## 3 :A Process
+A process is a running program.
+
+
+Comprising of a process:
+- Memory (address space)
+- -Instructions
+- -Data section
+- Registers
+- -Program counter
+- -Stack pointer
+
+
+## 4 : Process API
+These APIs are available on any modern OS.
+Create
+- Create a new process to run a program
+Destroy
+- Halt a runaway process
+Wait
+- Wait for a process to stop running
+Miscellaneous Control
+- Some kind of method to suspend a process and then resume it
+Status
+- Get some status info about a process
+
+
+## 5 : Process Creation
+1, Load a program code into memory, into the address space of the process.
+- Programs initially reside on disk in executable format.
+- OS perform the loading process lazily.
+  -> Loading pieces of code or data only as they are needed during program execution.
+
+2, The program’s run-time stack is allocated.
+- Use the stack for local variables, function parameters, and return address.
+- Initialize the stack with arguments  argc and the argv array of main() function
+
+
+## 6 : Process Creation (Cont.)
+3, The program’s heap is created.
+- Used for explicitly requested dynamically allocated data.
+- Program request such space by calling malloc()and free it by calling free().
+
+4, The OS do some other initialization tasks.
+- Input/output (I/O) setup
+- - Each process by default has three open file descriptors.
+- - Standard input, output and error
+
+5,Start the program running at the entry point, namely main().
+- The OS transfers control of the CPU to the newly-created process.
+
+
+## 7 :
+Loading:
+Takes on-disk program
+and reads it into the address space of process
+
+
+## 9 : Process States
+A process can be one of three states.
+Running
+- A process is running on a processor.
+Ready
+- A process is ready to run but for some reason the OS has chosen not to run it at this given moment.
+Blocked
+- A process has performed some kind of operation.
+- When a process initiates an I/O request to a disk, it becomes blocked and thus some other process can use the processor.
+
+## 10 : Data structures
+The OS has some key data structures that track various relevant pieces of information.
+- Process list
+- -Ready processes
+- -Blocked processes
+- - Current running process
+- Register context
+
+Process Control Block (PCB)
+- A C-structure that contains information about each process.
+
+
+## 15 : The fork() System Call
+Create a new process
+- The newly-created process has its own copy of the address space, registers, and PC.
+
+## 23 : CPU registers and instructions
+x86 is a CISC architecture with hundreds of instructions defined
+General instruction categories
+- General Purpose instructions
+- Floating-Point instructions
+- Program Flow-related instructions
+Hardware-related instructions
+- Simple x86 instructions:
+- MOV	  AX, BX
+
+- ADD	  AX, CX
+
+
+## 24 : CPU registers and instructions
+A number of the x86 instructions have multiple variants. 
+Here are a few variants of the MOV and ADD instructions as examples:
+
+MOV    SI, 7000h		; move immediate to register
+MOV    BX, AX			; move ax register to bx register
+MOV    BX, [SI]			; move memory data to register
+MOV    [SI], BX			; move register data to memory
+ADD    AX, BX			; register to register add
+ADD    AX, [BX]		; memory to register add 
+ADD    [BX], AX		; register to memory add
+ADD    AX, 20			; immediate to register add
+
+
+## 25 : CPU registers and instructions
+A small sampling of the general-purpose and floating-point x86 instructions are shown below:
+
+
+## 26 : CPU registers and instructions
+Here is a small subset of the x86 instructions related to program flow:
+JMP
+JNZ
+LOOP
+CALL
+RET
+INT
+IRET
+
+
+## 28 : CPU registers and instructions
+General-Purpose Registers (GPRs)
+
+
+## 29 : CPU registers and instructions
+CPU registers and instructions
+
+## 30 : CPU registers and instructions
+
+## 33 : CPU registers and instructions
+Sized Operations with GPRs
+
+8-bit Operations                
+ADD    AX, BX
+ADD    AX, R8W
+ADD    R9W, R8W
+
+64-bit Operations
+ADD    RAX, RBX
+ADD    RAX, R8
+ADD    RAX, RAX
+
+16-bit Operations
+ADD    AL, BL
+ADD    AL, AH
+ADD    R8B, AL
+ADD    R8B, AH
+
+32-bit Operations
+ADD    EAX, EBX
+ADD    EAX, R8D
+ADD    R9W, EAX
+
+## 35 : CPU registers and instructions
+Little Endian – the least significant byte goes in the littlest address
+mov    esi, 4000h
+mov    ax, 1234h
+mov    [esi], ax
+
+## 36 : Single Instruction Multiple Data (Simd)
+x87 FPU Register Set
+- The MMX registers are the same physical registers as the x87 registers
+- MMX instructions perform the same operation on multiple pieces of data packed into registers
+- - SIMD operations
+- -Targeted at multimedia and communication applications
+Only supports integer operations
+
+
+## 37 : Single Instruction Multiple Data (Simd)
+PADDSB
+- Packed Add Bytes
+- Signed, Saturating
+PADDUSB
+- Packed Add Bytes
+- Unsigned, Saturating
+
+
+
+
+
 
 ## 179 page
 With round robin, the system might produce a schedule that looks like this:
