@@ -641,6 +641,445 @@ Interrupt and Exception handling cause the processor to transit into 64-bit Mode
 
 
 
+
+## 63 : The elf binary format
+file hello
+file hello.o
+readelf -h hello
+readelf -h hello.o
+readelf -l hello
+readelf -l hello.o
+readelf -S hello
+readelf -S hello.o
+nm hello.o
+nm hello
+
+
+readelf -r hello.o
+readelf -s hello
+readelf -d hello
+objdump -d hello.o -M intel
+objdump -d hello -M intel
+
+
+
+## 64 : Procedure call
+The stack is a memory area at the end of the address space of a process
+- It grows from top to bottom when elements are pushed on to it
+- It is used to provide memory for the local variables of the function
+- It also supports parameter-passing when functions are invoked
+- If nested procedures are called, the stack grows from top to bottom and accepts new activation records that hold all data needed for one procedure
+- The activation record of the procedure currently executing is delimited at the top by the frame pointer and at the bottom by the stack pointer
+
+
+
+
+## 65 : Procedure call
+Two stack manipulation commands
+- Push places a value on the stack and decrements the stack pointer by the number of bytes in memory required by the value
+- -The end of the stack is moved down to lower addresses
+- Pop removes a value from the stack and increments the value of the stack pointer accordingly
+- -The end of the stack is moved up
+
+
+
+
+## 66: Procedure call
+To invoke and exit functions, the following two commands are provided – they automatically manipulate the stack
+- call pushes the current value of the instruction pointer onto the stack and branches to the start address of the function to be called
+- return pops the bottom value from the stack and branches to the specified address
+- -Procedures must be implemented so that return is the last command and the address placed on the stack by call is at the bottom
+
+
+
+
+
+## 67 : Procedure call
+A procedure call therefore consists of the following two steps
+1, Build a parameter list in the stack
+- The first argument to be passed to the called function is placed last on the stack
+- This makes it possible to pass a varying number of arguments that can be popped from the stack one after the other
+2, Invoke call, which causes the current value of the instruction pointer (pointing to the instruction that follows call) to be pushed onto the stack and delegates code flow to the invoked function
+
+
+
+
+
+
+## 68 : Procedure call
+The procedure called is responsible for managing the frame pointer and performs the following steps
+1, The previous frame pointer is pushed onto the stack, thus moving the stack pointer down
+2, The frame pointer is assigned the current value of the stack pointer and now marks the start of the stack area for the function to be executed
+3, The code of the function is executed
+4, When the function terminates, the stored frame pointer is at the bottom of the stack
+- Its value is popped from the stack and saved in the frame pointer that now again points to the start of the stack area of the previous function 
+- The return address saved when the function was called is now located at the bottom end of the stack
+5, Invoking return causes the return address to be popped from the stack
+- The processor branches to the return address, thus returning the code flow to the calling function
+
+
+
+
+
+## 71 : Stack overflow protection
+-fno-stack-protector
+- No protection code is included for stack smashing attacks.
+-fstack-protector
+- Emit extra code to check for buffer overflows, such as stack smashing attacks. 
+- This is done by adding a guard variable to functions with vulnerable objects. 
+- This includes functions that call alloca(), and functions with buffers larger than 8 bytes.
+-fstack-protector-all 
+- Like -fstack-protector except that all functions are protected.
+
+
+
+
+
+## 74 : Software Privilege Levels
+Level 0 - highest privilege level
+- For OS kernel
+Level 1 - second highest privilege level
+- For OS Services and high-privileged device drivers
+- Could be used for debuggers
+Level 2 - third highest privilege level
+- For lower-privileged device driver
+Level 3 - lowest privilege level
+- For application programs
+
+
+
+
+
+## 75 : Privilege (protection) Rings
+The x86 systems use privilege levels, the mechanism whereby the OS and CPU conspire to restrict what user-mode programs can do
+- 0 (most privileged) to 3 (least privileged)
+- For memory, I/O ports, machine instructions
+
+
+
+## 76 : Privilege (protection) Rings
+About 15 instructions are restricted by the CPU to ring 0
+- These instructions can subvert the protection mechanism
+- An attempt to run them outside of ring 0 causes a general-protection exception
+CPU keeps track of the current privilege level, which involves the segment selectors, e.g.,:
+- Requested Privilege Level (RPL)
+- Current Privilege Level (CPL)
+
+
+
+
+## 78 : Privilege (protection) Rings
+Keep in mind that the CPU privilege level has nothing to do with OS users
+- Whether you’re root, administrator, guest, or a regular user, it does not matter
+- All user code runs in ring 3, all kernel code runs in ring 0
+- -regardless of the OS users on whose behalf the code operates
+ Due to restricted access to memory and I/O ports, user mode can do almost nothing to the outside world without calling the kernel
+- All of the data structures that control such things – memory, open files, etc. – cannot be touched directly by user code 
+
+
+
+
+
+## 79 : Privilege (protection) Rings
+The CPU protects memory at two crucial points:
+- When a segment selector is loaded
+- When a page of memory is accessed with a linear address
+When a data segment selector is being loaded, the check below takes place:
+
+
+
+
+
+## 80 : Privilege (protection) Rings
+Useful memory protection is done in the paging unit when a linear address is converted into a physical address
+Each memory page is a block of bytes described by a page table entry containing two fields related to protection:
+- Supervisor flag
+- Read/write flag
+The supervisor flag is the primary x86 memory protection mechanism used by kernels
+- When it is on, the page cannot be accessed from ring 3
+
+
+
+
+## 81 : Privilege (protection) Rings
+While the read/write flag isn’t as important for enforcing privilege, it’s still useful
+- When a process is loaded, pages storing binary images (code) are marked as read only, thereby catching some pointer errors if a program attempts to write to these pages
+- This flag is also used to implement copy on write when a process is forked in Unix
+- Upon forking, the parent’s pages are marked read only and shared with the forked child
+- If either process attempts to write to the page, the processor triggers a fault and the kernel knows to duplicate the page and mark it read/write for the writing process
+
+
+
+
+## 82 : System calls in detail
+Every interaction with the outside world is mediated by the kernel through system calls
+- If an application saves a file, writes to the terminal, or opens a TCP connection, the kernel is involved
+- These system calls are function calls from an application into the kernel
+
+
+
+
+## 86 : System calls in detail
+It all starts with a call to the C library’s getpid(), which is a wrapper for the system call
+
+Once the wrapper has done its initial work it’s time to jump into the kernel
+
+The mechanics of this transition vary by processor architecture
+
+In Intel processors, arguments and the syscall number are loaded into registers, then an instruction is executed to put the CPU in privileged mode and immediately transfer
+control to a global syscall entry point within the kernel
+
+The kernel then uses the syscall number as an index into sys_call_table, an array of function pointers to each syscall implementation
+https://thevivekpandey.github.io/posts/2017-09-25-linux-system-calls.html
+
+
+
+
+## 88 : How to efficiently virtualize the CPU with control?
+The OS needs to share the physical CPU by time sharing.
+Issue
+- Performance: How can we implement virtualization without adding excessive overhead to the system?
+- Control: How can we run processes efficiently while retaining control over the CPU?
+
+
+## 90 : Problem 1: Restricted Operation
+What if a process wishes to perform some kind of restricted operation such as …
+- Issuing an I/O request to a disk
+- Gaining access to more system resources such as CPU or memory
+
+Solution: Using protected control transfer
+- User mode: Applications do not have full access to hardware resources.
+- Kernel mode: The OS has access to the full resources of the machine
+
+
+
+
+
+
+## 91 : System Call
+Allow the kernel to carefully expose certain key pieces of functionality to user program, such as …
+- Accessing the file system
+- Creating and destroying processes
+- Communicating with other processes
+- Allocating more memory
+
+
+
+
+## 92 : System Call (Cont.)
+Trap instruction
+- Jump into the kernel
+- Raise the privilege level to kernel mode
+
+Return-from-trap instruction
+- Return into the calling user program
+- Reduce the privilege level back to user mode
+
+
+
+
+## 95 : interrupt service routine (ISR)
+An interrupt is an event that causes the currently executing code to be effectively paused while the event is serviced.
+There are two main categories of interrupts:
+- Hardware interrupts 
+- -Asynchronous
+- Software interrupts 
+- -Synchronous
+
+
+
+
+
+## 96 : Hardware Interrupts
+External interrupts from a IO devices, chipset components or other processors
+Local interrupts
+- Thermal sensor, performance monitor counter interrupts, etc.
+Special case interrupts:
+- NMI: Non-Maskable Interrupt
+- SMI: System Management Interrupt
+
+
+
+
+
+
+
+## 97 :Hardware Interrupts
+Most hardware interrupts go through an interrupt controller (e.g. Local APIC) before being delivered to the target core.
+- NMIs and SMIs are not handled by an interrupt controller. 
+- -These are delivered directly to the target core.
+Software running on one core can program that core’s local APIC to fire an interrupt targeting another core (or set of cores)
+- Commonly referred to as IPIs (Inter-Processor Interrupts)
+
+
+
+
+
+## 98 :Software interrupts
+Interrupts may also occur via dedicated software instructions. 
+Each time an interrupt instruction (INT xx) is executed by the processor, the xx value (an 8-bit operand) causes the CPU to run the requested interrupt service routine.
+INT 21h for various DOS services
+DOS read, write, write string, terminate program, etc.
+INT 80h (x86) and syscall (x86_64) for system calls
+Software interrupts do NOT interact with any interrupt controller (e.g. Local APIC). 
+These are handled entirely within the core executing the instruction.
+
+
+
+
+
+
+## 99 : Processor Exceptions
+An exception is typically an unexpected internal event and generally occurs when the CPU executes an instruction requiring additional attention
+Some exceptions are error conditions, some are not:
+- Integer divide by zero attempt (an error exception)
+- Page fault
+- -when attempting to access a memory address that isn't present in DRAM
+- Stack overflow, etc.
+Exceptions do NOT interact with any interrupt controller (e.g. Local APIC).
+- These are handled entirely within the core that detected the exception.
+
+
+
+
+
+
+## 100 :interrupt service routine (ISR)
+
+Each unique interrupt and exception is represented by a vectors (aka interrupt vector).
+- CPU uses the vector to locate and execute the appropriate handler, also referred to as the interrupt service routine (ISR)
+
+The x86 architecture supports an 8-bit interrupt vector (0 –255) 
+- In multi-processor/core systems, there can be more than 256 unique interrupts. 
+- Each logical processor supports 256 vectors.
+
+
+
+
+
+## 102 : interrupt service routine (ISR)
+Upon entering an ISR, the processor automatically saves info about the state of the interrupted program:
+
+SS, SP, Flags, CS, IP, etc.
+
+
+
+## 103 : Non-maskable interrupt (NMI)
+A computer processor interrupt that cannot be ignored by standard interrupt masking techniques in the system
+- When response time is critical or when an interrupt should never be disabled during normal system operation
+- Typically used to signal attention for non-recoverable hardware errors
+These errors include
+- Non-recoverable internal system chipset errors
+- Corruption in system memory such as parity and ECC errors
+- Data corruption detected on system and peripheral busses
+From users
+- Hardware and software debugging interfaces
+- System reset buttons
+
+
+
+## 105 :Problem 2: Switching Between Processes
+How can the OS regain control of the CPU so that it can switch between processes?
+- A cooperative Approach: Wait for system calls
+- A non-cooperative Approach: The OS takes control
+
+
+
+
+## 106 : A cooperative Approach: Wait for system calls
+Processes periodically give up the CPU by making system calls such as yield.
+- The OS decides to run some other task.
+- Application also transfer control to the OS when they do something illegal.
+- -Divide by zero
+- -Try to access memory that it shouldn’t be able to access
+
+- Ex) Early versions of the Macintosh OS, The old Xerox Alto system
+
+A process gets stuck in an infinite loop. 
+ Reboot the machine
+
+
+
+
+## 107 : A Non-Cooperative Approach: OS Takes Control
+A timer interrupt
+- During the boot sequence, the OS start the timer.
+- The timer raise an interrupt every so many milliseconds.
+- When the interrupt is raised :
+- -The currently running process is halted.
+- -Save enough of the state of the program
+- -A pre-configured interrupt handler in the OS runs.
+
+A timer interrupt gives OS the ability to 
+
+run again on a CPU.
+
+
+
+
+
+## 108 : System Timers
+Intel 8253/8254 - Programmable Interval Timers (PITs)
+- Timer 0 (System Timing): 1.1932 MHz
+- Timer 1 (DRAM Refresh): 1.1932 MHz
+- Timer 2 (General Use and Speaker): 1.1932 MHz
+- Timer 3 (Watchdog Timer): 298.3 KHz
+- Timer 4 (Not Implemented)
+- Timer 5 (CPU Speed Control)
+Newer motherboards also include a counter through
+- Advanced Configuration and Power Interface (ACPI)
+- Local Advanced Programmable Interrupt Controller (Local APIC)
+- High Precision Event Timer
+The CPU itself also provides the Time Stamp Counter (TSC)
+
+
+## 109 : Saving and Restoring Context
+Scheduler makes a decision:
+- Whether to continue running the current process, or switch to a different one.
+- If the decision is made to switch, the OS executes context switch.
+
+
+
+## 110 : Context Switch
+A low-level piece of assembly code
+- Save a few register values for the current process onto its kernel stack
+- General purpose registers
+- -PC
+- -Kernel stack pointer
+- Restore a few for the soon-to-be-executing process from its kernel stack
+- Switch to the kernel stack for the soon-to-be-executing process 
+
+
+## 114 : 병행성이 걱정?
+What happens if, during interrupt or trap handling, another interrupt occurs?
+
+OS handles these situations:
+
+Disable interrupts during interrupt processing
+
+Use a number of sophisticate locking schemes to protect concurrent access to internal data structures.
+
+
+
+## 123 : Events that Cause a Task Switch
+The CS portion of a Far Call/Far jump branch target address selects TSS descriptor in GDT
+
+The CS portion of a Far Call/Far jump selects Task Gate descriptor in the GDT or LDT
+
+INT nn where nn selects a Task Gate in IDT
+
+Hardware interrupt selects a Task Gate in IDT
+
+Software exception selects a Task Gate in IDT
+
+IRET execution when Eflags[NT] bit set
+
+
+
+
+
+
+
 ## 179 page
 With round robin, the system might produce a schedule that looks like this:
 
